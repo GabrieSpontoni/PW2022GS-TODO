@@ -1,0 +1,12 @@
+.container {
+  background-color: #f1f1fe;
+  min-height: 100vh;
+  max-width: max-content;
+  padding-left: 40px;
+  padding-top: 10px;
+  padding-right: 40px;
+}
+
+.container ul {
+  margin-top: 100px;
+}

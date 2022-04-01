@@ -3,26 +3,37 @@ import styles from "./Sidebar.module.css";
 export default function Sidebar() {
   return (
     <div className={styles.container}>
-      <h1>Sidebar</h1>
+      <h1>TO-DO</h1>
       <ul className="nav flex-column">
         <li className="nav-item">
-          <a className="nav-link active" aria-current="page" href="#">
-            Active
+          <a
+            className="nav-link active"
+            aria-current="page"
+            href="/isolated-tasks"
+          >
+            Tarefas isoladas
           </a>
         </li>
+        <hr />
+        <li className="nav-item">
+          <a className="nav-link" href="/isolated-tasks">
+            Lista de tarefas
+          </a>
+        </li>
+        <hr />
         <li className="nav-item">
           <a className="nav-link" href="#">
-            Link
+            Andamento geral
           </a>
         </li>
+        <hr />
         <li className="nav-item">
           <a className="nav-link" href="#">
-            Link
+            Compartilhar
           </a>
         </li>
-        <li className="nav-item">
-          <a className="nav-link disabled">Disabled</a>
-        </li>
+
+        <hr />
       </ul>
     </div>
   );

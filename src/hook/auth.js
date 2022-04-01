@@ -21,9 +21,9 @@ export function AuthProvider(props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
+    onAuthStateChanged(auth, (usr) => {
+      if (usr) {
+        setUser(usr);
         setLoading(false);
       } else {
         setUser(null);
