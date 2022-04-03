@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import useAuth from "../src/hook/auth";
 
-import IsoTasks from "../src/app/main/isolated-tasks/IsolatedTasks";
+import LisTasks from "../src/app/main/list-tasks/ListTasks";
 
-export default function IsolatedTasks() {
+export default function ListTasks() {
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -11,5 +11,5 @@ export default function IsolatedTasks() {
       window.location.href = "/";
     }
   });
-  return <IsoTasks />;
+  return <LisTasks />;
 }

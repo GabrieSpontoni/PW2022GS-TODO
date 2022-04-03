@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { useEffect } from "react";
+import Link from "next/link";
 import useAuth from "../../../hook/auth";
-import styles from "./LoginForm.module.css";
+import styles from "./RegisterForm.module.css";
 
-export default function LoginForm() {
-  const { loginWithEmailAndPassword, user, loading, error } = useAuth();
+export default function RegisterForm() {
+  const { createUser, user, loading, error } = useAuth();
 
   useEffect(() => {
     if (user && !loading) {
@@ -13,7 +13,7 @@ export default function LoginForm() {
   });
 
   const onSubmit = (e, data) => {
-    loginWithEmailAndPassword(e.target[0].value, e.target[1].value);
+    createUser(e.target[0].value, e.target[1].value, e.target[2].value);
     e.preventDefault();
   };
 
@@ -21,6 +21,14 @@ export default function LoginForm() {
     <div className={styles.container}>
       <div className={styles.content}>
         <form onSubmit={onSubmit}>
+          <div className="mb-3 input-group">
+            <input
+              type="text"
+              className="form-control form-control-lg"
+              placeholder="Nome Completo"
+              required
+            />
+          </div>
           <div className="mb-3 input-group">
             <input
               type="email"
@@ -43,7 +51,7 @@ export default function LoginForm() {
 
           <div className={styles.button}>
             <button type="submit" className="btn btn-primary">
-              Login
+              Registrar
             </button>
           </div>
         </form>

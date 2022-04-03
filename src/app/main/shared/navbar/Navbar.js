@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
@@ -6,19 +6,27 @@ import useAuth from "../../../../hook/auth";
 
 export default function Sidebar() {
   const { user, loading, logout } = useAuth();
+  const [name, setName] = useState("-");
+
+  useEffect(() => {
+    console.log(user);
+    setName(
+      user?.displayName.split(" ")[0] + " " + user?.displayName.split(" ")[1]
+    );
+  });
 
   const handleLogout = () => {
     logout();
   };
   return (
-    <nav className="navbar navbar-light ">
+    <nav className="navbar navbar-light">
       <div className="container-fluid">
         <a className="navbar-brand">
           <FontAwesomeIcon
             className="d-inline-block align-text-top"
             icon={faUser}
           />{" "}
-          Gabriel Spontoni{" "}
+          {name}{" "}
           <button onClick={handleLogout} className="btn btn-outline-danger">
             Sair
           </button>

@@ -1,6 +1,6 @@
 .container {
   background-color: red;
-  width: 100%;
+  max-width: 80%;
   height: max-content;
   padding-left: 40px;
   padding-top: 10px;

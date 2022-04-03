@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
+  createUserWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 
 import "../config/firebase-config";
@@ -32,6 +34,24 @@ export function AuthProvider(props) {
     });
   });
 
+  const createUser = (displayName, email, password) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        updateProfile(auth.currentUser, {
+          displayName: displayName,
+        })
+          .then((usr) => {
+            console.log("User profile updated");
+          })
+          .catch((error) => {
+            console.log("Error updating user profile");
+          });
+      })
+      .catch((error) => {
+        setError(error.code);
+      });
+  };
+
   const loginWithEmailAndPassword = async (email, password) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -39,7 +59,7 @@ export function AuthProvider(props) {
         setLoading(false);
       })
       .catch((error) => {
-        setError(error);
+        setError(error.code);
         setLoading(false);
       });
   };
@@ -56,7 +76,14 @@ export function AuthProvider(props) {
       });
   };
 
-  const value = { user, error, loading, loginWithEmailAndPassword, logout };
+  const value = {
+    user,
+    error,
+    loading,
+    loginWithEmailAndPassword,
+    logout,
+    createUser,
+  };
 
   return <authContext.Provider value={value} {...props} />;
 }

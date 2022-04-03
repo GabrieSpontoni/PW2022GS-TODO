@@ -1,7 +1,7 @@
 import Sidebar from "../shared/sidebar/Sidebar";
 import Navbar from "../shared/navbar/Navbar";
-import Tasks from "../components/isolated-tasks/Tasks";
-export default function IsolatedTasks() {
+import LisTasks from "../components/list-tasks/ListTasks";
+export default function ListTasks() {
   return (
     <div
       style={{
@@ -17,7 +17,7 @@ export default function IsolatedTasks() {
       >
         <Navbar />
         <hr />
-        <Tasks />
+        <LisTasks />
       </div>
     </div>
   );
