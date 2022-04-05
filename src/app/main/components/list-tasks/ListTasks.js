@@ -3,11 +3,7 @@ import styles from "./ListTasks.module.css";
 export default function Tasks() {
   return (
     <div>
-      <div
-        style={{
-          marginBottom: "100px",
-        }}
-      >
+      <div className={styles.container}>
         <h3 className="mb-2 text-muted">Lista de Tarefas</h3>
       </div>
       <div className={styles.container}>
@@ -23,9 +19,9 @@ export default function Tasks() {
           </div>
         </form>
       </div>
-      <label className="form-label mb-2 text-muted">Listas</label>
 
       <div className={styles.container}>
+        <label className="form-label mb-2 text-muted">Listas</label>
         <div className="card">
           <h5 className="card-header text-muted text-center">Estágio</h5>
           <div className="table-responsive">
