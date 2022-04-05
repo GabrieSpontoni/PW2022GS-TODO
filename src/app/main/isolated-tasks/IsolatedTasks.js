@@ -13,6 +13,7 @@ export default function IsolatedTasks() {
       <div
         style={{
           width: "100%",
+          paddingLeft: "20px",
         }}
       >
         <Navbar />

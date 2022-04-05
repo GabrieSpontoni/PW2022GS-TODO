@@ -41,7 +41,7 @@ export default function Sidebar() {
             </li>
             <hr />
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <a className="nav-link" href="/general-progress">
                 Andamento geral
               </a>
             </li>

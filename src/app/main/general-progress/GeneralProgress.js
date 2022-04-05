@@ -1,7 +1,7 @@
 import Sidebar from "../shared/sidebar/Sidebar";
 import Navbar from "../shared/navbar/Navbar";
-import LisTasks from "../components/list-tasks/ListTasks";
-export default function ListTasks() {
+import ProgressGeneral from "../components/general-progress/GeneralProgress";
+export default function GeneralProgress() {
   return (
     <div
       style={{
@@ -18,7 +18,7 @@ export default function ListTasks() {
       >
         <Navbar />
         <hr />
-        <LisTasks />
+        <ProgressGeneral />
       </div>
     </div>
   );
