@@ -4,11 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBars } from "@fortawesome/free-solid-svg-icons";
 
 import useAuth from "../../../../hook/auth";
+import ModalSearch from "./components/ModalSearch";
 
 export default function Sidebar() {
   const { user, loading, logout } = useAuth();
   const [name, setName] = useState("-");
   const [show, setShow] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     console.log(user);
@@ -23,6 +25,9 @@ export default function Sidebar() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = () => setShowModal(true);
   return (
     <div
       style={{
@@ -30,27 +35,37 @@ export default function Sidebar() {
         marginLeft: "10px",
       }}
     >
-      <a className="navbar-brand">
-        <button
-          onClick={handleShow}
-          type="button"
-          className="btn btn-outline-secondary"
-        >
-          <FontAwesomeIcon icon={faBars} />
-        </button>{" "}
-        <FontAwesomeIcon
-          className="d-inline-block align-text-top"
-          icon={faUser}
-        />{" "}
-        {name}{" "}
-        <button onClick={handleLogout} className="btn btn-outline-danger">
-          Sair
-        </button>
-      </a>
+      <nav className="navbar navbar-light bg-light">
+        <div className="container-fluid">
+          <a className="navbar-brand">
+            <button
+              onClick={handleShow}
+              type="button"
+              className="btn btn-outline-secondary"
+            >
+              <FontAwesomeIcon icon={faBars} />
+            </button>{" "}
+            <FontAwesomeIcon
+              className="d-inline-block align-text-top"
+              icon={faUser}
+            />{" "}
+            {name}{" "}
+            <button onClick={handleLogout} className="btn btn-outline-danger">
+              Sair
+            </button>
+          </a>
+
+          <ModalSearch
+            showModal={showModal}
+            handleCloseModal={handleCloseModal}
+            handleShowModal={handleShowModal}
+          />
+        </div>
+      </nav>
 
       <Offcanvas
         style={{
-          backgroundColor: "red",
+          backgroundColor: "#f1f1fe",
         }}
         show={show}
         onHide={handleClose}
@@ -83,7 +98,7 @@ export default function Sidebar() {
             </li>
             <hr />
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <a className="nav-link" href="/share">
                 Compartilhar
               </a>
             </li>
