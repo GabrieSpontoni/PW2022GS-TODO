@@ -13,7 +13,6 @@ export default function Sidebar() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    console.log(user);
     setName(
       user?.displayName.split(" ")[0] + " " + user?.displayName.split(" ")[1]
     );
