@@ -9,7 +9,6 @@ export default function Sidebar() {
   const [name, setName] = useState("-");
 
   useEffect(() => {
-    console.log(user);
     setName(
       user?.displayName.split(" ")[0] + " " + user?.displayName.split(" ")[1]
     );

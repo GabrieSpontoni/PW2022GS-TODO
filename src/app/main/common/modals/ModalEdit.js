@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { getDatabase, ref, update } from "firebase/database";
 
-import useAuth from "../../../../../hook/auth";
+import useAuth from "../../../../hook/auth";
 
 export default function ModalEdit({
   showModal,
   handleCloseModal,
   handleShowModal,
   editTask,
+  path,
 }) {
   const { user, loading } = useAuth();
-  const [amountTags, setAmountTags] = useState(1);
   const [errorForm, setErrorForm] = useState({
     errorTags: false,
   });
@@ -37,11 +37,29 @@ export default function ModalEdit({
         tags: editTask.editTask.tags,
         status: editTask.editTask.status,
       });
+
+      // switch (path) {
+      //   case "tarefas_isoladas":
+      //     setForm({
+      //       tarefa: editTask.editTask.tarefa,
+      //       tempo_limite: editTask.editTask.tempo_limite,
+      //       tags: editTask.editTask.tags,
+      //       status: editTask.editTask.status,
+      //     });
+      //     break;
+      //   case "tarefas_listas":
+      //     console.log("entrou");
+      //     setForm({
+      //       tarefa: editTask.editTask.tarefa,
+      //       tempo_limite: editTask.editTask.tempo_limite,
+      //       tags: editTask.editTask.tags,
+      //       status: editTask.editTask.status,
+      //     });
+      // }
     }
   }, [editTask]);
 
   const handleSubmit = (e) => {
-    console.log(form);
     if (form.tags.length === 0) {
       setErrorForm({
         ...errorForm,
@@ -51,8 +69,21 @@ export default function ModalEdit({
     } else {
       const updateData = form;
       const updates = {};
-      updates[`usuarios/${user.uid}/tarefas_isoladas/${editTask.key}`] =
-        updateData;
+
+      switch (path) {
+        case "tarefas_isoladas":
+          updates[`usuarios/${user.uid}/tarefas_isoladas/${editTask.key}`] =
+            updateData;
+          break;
+        case "tarefas_listas":
+          updates[
+            `usuarios/${user.uid}/tarefas_listas/${editTask.keyList}/tarefas/${editTask.key}`
+          ] = updateData;
+          break;
+        default:
+          break;
+      }
+
       update(ref(db), updates)
         .then(() => {
           handleCloseModal();
@@ -65,6 +96,18 @@ export default function ModalEdit({
 
     e.preventDefault();
   };
+
+  // const getPath = () => {
+  //   switch (path) {
+  //     case "tarefas_isoladas":
+  //       return editTask.editTask.tarefa;
+
+  //     case "tarefas_listas":
+  //       return editTask.editTask.tarefa;
+  //     default:
+  //       return "";
+  //   }
+  // };
 
   const getColorBtn = (color) => {
     switch (color) {
@@ -141,7 +184,6 @@ export default function ModalEdit({
                           onClick={() => {
                             const tagsArray = form.tags;
                             tagsArray.splice(index, 1);
-                            console.log(tagsArray);
                             setForm({
                               ...form,
                               tags: tagsArray,
@@ -212,7 +254,6 @@ export default function ModalEdit({
                   variant="secondary"
                   onClick={() => {
                     handleCloseModal();
-                    setAmountTags(1);
                   }}
                 >
                   Close

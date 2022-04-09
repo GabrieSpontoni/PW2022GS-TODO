@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { getDatabase, ref, set, onValue, push } from "firebase/database";
-import { Button, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faDeleteLeft } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Tasks.module.css";
 import useAuth from "../../../../hook/auth";
-import ModalEdit from "./components/ModalEdit";
-import ModalDelete from "./components/ModalDelete";
+import ModalEdit from "../../common/modals/ModalEdit";
+import ModalDelete from "../../common/modals/ModalDelete";
 
 export default function Tasks() {
   const { user, loading } = useAuth();
@@ -27,6 +26,8 @@ export default function Tasks() {
         (snapshot) => {
           if (snapshot.val()) {
             setAllTasks(snapshot.val());
+          } else {
+            setAllTasks(null);
           }
         }
       );
@@ -196,6 +197,7 @@ export default function Tasks() {
           handleCloseModal={handleCloseModal}
           handleShowModal={handleShowModal}
           editTask={editTask}
+          path="tarefas_isoladas"
         />
       </div>
 

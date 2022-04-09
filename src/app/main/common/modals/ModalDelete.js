@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { getDatabase, ref, remove } from "firebase/database";
 
-import useAuth from "../../../../../hook/auth";
+import useAuth from "../../../../hook/auth";
 
 export default function ModalEdit({
   showModal,
@@ -15,11 +15,9 @@ export default function ModalEdit({
   const db = getDatabase();
 
   const handleDelete = (e) => {
-    console.log(deleteTask);
     remove(ref(db, `usuarios/${user.uid}/tarefas_isoladas/${deleteTask.key}`))
       .then(() => {
         handleCloseModal();
-        console.log("ok");
       })
       .catch(() => {
         console.log("erro");
