@@ -7,6 +7,7 @@ import { faPenToSquare, faDeleteLeft } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Tasks.module.css";
 import useAuth from "../../../../hook/auth";
 import ModalEdit from "./components/ModalEdit";
+import ModalDelete from "./components/ModalDelete";
 
 export default function Tasks() {
   const { user, loading } = useAuth();
@@ -14,8 +15,10 @@ export default function Tasks() {
 
   const [newTask, setNewTask] = useState("");
   const [editTask, setEditTask] = useState("");
+  const [deleteTask, setDeleteTask] = useState("");
   const [allTasks, setAllTasks] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
 
   useEffect(() => {
     if (user && !loading) {
@@ -30,7 +33,7 @@ export default function Tasks() {
     }
   }, [user, loading]);
 
-  const addTask = () => {
+  const addTask = (e) => {
     const db = getDatabase();
     const isolatedTasksRef = ref(
       db,
@@ -43,19 +46,32 @@ export default function Tasks() {
       tags: [
         {
           tag: "",
-          cor: "",
+          cor: "branco",
         },
       ],
       status: "nao_concluido",
     })
-      .then(() => {
-        console.log("ok");
-      })
+      .then(() => {})
       .catch(() => {
         console.log("erro");
       });
+    e.preventDefault();
   };
 
+  const getColorBtn = (color) => {
+    switch (color) {
+      case "branco":
+        return "badge bg-dark";
+      case "azul":
+        return "badge bg-primary";
+      case "verde":
+        return "badge bg-success";
+      case "amarelo":
+        return "badge bg-warning text-dark";
+      case "vermelho":
+        return "badge bg-danger";
+    }
+  };
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = (editTask, key) => {
     setEditTask({
@@ -64,13 +80,23 @@ export default function Tasks() {
     });
     setShowModal(true);
   };
+
+  const handleCloseModalDelete = () => setShowModalDelete(false);
+  const handleShowModalDelete = (deleteTask, key) => {
+    setDeleteTask({
+      key,
+      deleteTask,
+    });
+
+    setShowModalDelete(true);
+  };
   return (
     <div>
       <div className={styles.container}>
         <h3 className="mb-2 text-muted">Tarefas isoladas</h3>
       </div>
       <div className={styles.container}>
-        <form>
+        <form onSubmit={addTask}>
           <div className="mb-3">
             <label
               htmlFor="exampleInputEmail1"
@@ -92,11 +118,7 @@ export default function Tasks() {
                 }}
               />
               <div>
-                <button
-                  onClick={addTask}
-                  type="button"
-                  className="btn btn-success"
-                >
+                <button type="submit" className="btn btn-success">
                   +
                 </button>
               </div>
@@ -123,19 +145,18 @@ export default function Tasks() {
                   return (
                     <tr key={key}>
                       <td>{allTasks[key].tarefa}</td>
-                      <td>{allTasks[key].data_conclusão}</td>
+                      <td>{allTasks[key].tempo_limite}</td>
                       <td>
                         {allTasks[key].tags.map((tag, index) => {
                           return (
                             <span
                               key={index}
+                              className={getColorBtn(tag.cor)}
                               style={{
-                                backgroundColor: tag.cor,
-                                padding: "5px",
-                                margin: "5px",
+                                marginRight: "5px",
                               }}
                             >
-                              {tag.tag}
+                              {tag.cor}
                             </span>
                           );
                         })}
@@ -151,7 +172,13 @@ export default function Tasks() {
                         >
                           <FontAwesomeIcon icon={faPenToSquare} />
                         </button>{" "}
-                        <button type="button" className="btn btn-danger">
+                        <button
+                          onClick={() => {
+                            handleShowModalDelete(allTasks[key], key);
+                          }}
+                          type="button"
+                          className="btn btn-danger"
+                        >
                           <FontAwesomeIcon icon={faDeleteLeft} />
                         </button>
                       </td>
@@ -169,6 +196,15 @@ export default function Tasks() {
           handleCloseModal={handleCloseModal}
           handleShowModal={handleShowModal}
           editTask={editTask}
+        />
+      </div>
+
+      <div>
+        <ModalDelete
+          showModal={showModalDelete}
+          handleCloseModal={handleCloseModalDelete}
+          handleShowModal={handleShowModalDelete}
+          deleteTask={deleteTask}
         />
       </div>
     </div>

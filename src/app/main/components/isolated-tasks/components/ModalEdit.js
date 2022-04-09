@@ -12,18 +12,25 @@ export default function ModalEdit({
 }) {
   const { user, loading } = useAuth();
   const [amountTags, setAmountTags] = useState(1);
+  const [errorForm, setErrorForm] = useState({
+    errorTags: false,
+  });
   const db = getDatabase();
 
   const [form, setForm] = useState({
     tarefa: "",
     tempo_limite: "",
-    tags: [],
+    tags: [
+      {
+        tag: "",
+        cor: "",
+      },
+    ],
     status: "",
   });
 
   useEffect(() => {
     if (editTask) {
-      console.log(editTask);
       setForm({
         tarefa: editTask.editTask.tarefa,
         tempo_limite: editTask.editTask.tempo_limite,
@@ -35,33 +42,42 @@ export default function ModalEdit({
 
   const handleSubmit = (e) => {
     console.log(form);
-
-    const updateData = form;
-    const updates = {};
-    updates[`usuarios/${user.uid}/tarefas_isoladas/${editTask.key}`] =
-      updateData;
-    update(ref(db), updates)
-      .then(() => {
-        console.log("ok");
-      })
-      .catch(() => {
-        console.log("erro");
+    if (form.tags.length === 0) {
+      setErrorForm({
+        ...errorForm,
+        errorTags: true,
       });
+      console.log("erro");
+    } else {
+      const updateData = form;
+      const updates = {};
+      updates[`usuarios/${user.uid}/tarefas_isoladas/${editTask.key}`] =
+        updateData;
+      update(ref(db), updates)
+        .then(() => {
+          handleCloseModal();
+          console.log("ok");
+        })
+        .catch(() => {
+          console.log("erro");
+        });
+    }
 
     e.preventDefault();
   };
 
-  const increaseAmountTags = () => {
-    setAmountTags(amountTags + 1);
-  };
-
-  const decreaseAmountTags = () => {
-    if (amountTags > 1) {
-      setAmountTags(amountTags - 1);
-      setForm({
-        ...form,
-        tags: form.tags.slice(0, -1),
-      });
+  const getColorBtn = (color) => {
+    switch (color) {
+      case "branco":
+        return "btn btn-outline-dark";
+      case "azul":
+        return "btn btn-outline-primary";
+      case "verde":
+        return "btn btn-outline-success";
+      case "amarelo":
+        return "btn btn-outline-warning";
+      case "vermelho":
+        return "btn btn-outline-danger";
     }
   };
   return (
@@ -111,61 +127,62 @@ export default function ModalEdit({
                   controlId="exampleForm.ControlInput1"
                 >
                   <Form.Label>
-                    <button
-                      onClick={increaseAmountTags}
-                      type="button"
-                      className="btn btn-outline-success btn-sm"
-                    >
-                      +
-                    </button>{" "}
-                    {amountTags} Tag(s){" "}
-                    <button
-                      onClick={decreaseAmountTags}
-                      type="button"
-                      className="btn btn-outline-danger btn-sm"
-                    >
-                      -
-                    </button>{" "}
-                    {editTask.editTask.tags.map((tag, index) => (
+                    Tags :{" "}
+                    {form.tags.map((tag, index) => (
                       <Form.Label
                         key={index}
                         style={{
                           marginLeft: "10px",
                         }}
                       >
-                        {" "}
-                        {tag.cor}
+                        <button
+                          type="button"
+                          className={getColorBtn(tag.cor)}
+                          onClick={() => {
+                            const tagsArray = form.tags;
+                            tagsArray.splice(index, 1);
+                            console.log(tagsArray);
+                            setForm({
+                              ...form,
+                              tags: tagsArray,
+                            });
+                          }}
+                        >
+                          {tag.cor}
+                        </button>
                       </Form.Label>
                     ))}
                   </Form.Label>
 
-                  {Array.from(Array(amountTags)).map((_, index) => (
-                    <Form.Control
-                      key={index}
-                      as="select"
-                      onChange={(e) => {
-                        if (
-                          !form.tags.some((tag) => tag.cor === e.target.value)
-                        ) {
-                          setForm({
-                            ...form,
-                            tags: [
-                              ...form.tags,
-                              {
-                                tag: " ",
-                                cor: e.target.value,
-                              },
-                            ],
-                          });
-                        }
-                      }}
-                    >
-                      <option>Azul</option>
-                      <option>Vermelho</option>
-                      <option>Verde</option>
-                      <option>Laranja</option>
-                    </Form.Control>
-                  ))}
+                  <Form.Control
+                    as="select"
+                    onChange={(e) => {
+                      setErrorForm({
+                        ...errorForm,
+                        errorTags: false,
+                      });
+                      if (
+                        !form.tags.some((tag) => tag.cor === e.target.value)
+                      ) {
+                        setForm({
+                          ...form,
+                          tags: [
+                            ...form.tags,
+                            {
+                              tag: " ",
+                              cor: e.target.value,
+                            },
+                          ],
+                        });
+                      }
+                    }}
+                  >
+                    <option>-</option>
+                    <option>azul</option>
+                    <option>vermelho</option>
+                    <option>verde</option>
+                    <option>amarelo</option>
+                  </Form.Control>
                 </Form.Group>
 
                 <Form.Group
@@ -183,9 +200,21 @@ export default function ModalEdit({
                     }}
                   />
                 </Form.Group>
+
+                {errorForm.errorTags && (
+                  <div className="alert alert-danger" role="alert">
+                    Selecione pelo menos uma tag
+                  </div>
+                )}
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseModal}>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    handleCloseModal();
+                    setAmountTags(1);
+                  }}
+                >
                   Close
                 </Button>
                 <Button type="submit">Save </Button>
