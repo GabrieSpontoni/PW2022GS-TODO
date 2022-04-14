@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react";
-import { getDatabase, ref, set, push, onValue } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  push,
+  onValue,
+  update,
+} from "firebase/database";
 import useAuth from "../../../../hook/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faDeleteLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPenToSquare,
+  faDeleteLeft,
+  faBan,
+  faCheck,
+} from "@fortawesome/free-solid-svg-icons";
 
 import ModalEdit from "../../common/modals/ModalEdit";
 import ModalDelete from "../../common/modals/ModalDelete";
@@ -19,6 +31,11 @@ export default function Tasks() {
   const [deleteTask, setDeleteTask] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
+  const [isForEditList, setIsForEditList] = useState({
+    isForEditList: false,
+    listId: "",
+  });
+  const [editList, setEditList] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -46,9 +63,7 @@ export default function Tasks() {
     set(newListTasksRef, {
       nome: newList,
     })
-      .then(() => {
-        console.log("sucesso");
-      })
+      .then(() => {})
       .catch(() => {
         console.log("erro");
       });
@@ -99,6 +114,27 @@ export default function Tasks() {
     }
   };
 
+  const handleEditList = (e, key) => {
+    const db = getDatabase();
+    const listTasksRef = ref(
+      db,
+      "usuarios/" + user.uid + "/tarefas_listas/" + key
+    );
+    update(listTasksRef, {
+      nome: editList,
+    })
+      .then(() => {
+        setIsForEditList({
+          isForEditList: false,
+          listId: "",
+        });
+      })
+      .catch(() => {
+        console.log("erro");
+      });
+    e.preventDefault();
+  };
+
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = (editTask, keyList, keyTask) => {
     setEditTask({
@@ -110,9 +146,11 @@ export default function Tasks() {
   };
 
   const handleCloseModalDelete = () => setShowModalDelete(false);
-  const handleShowModalDelete = (deleteTask, key) => {
+  const handleShowModalDelete = (deleteTask, keyList, keyTask) => {
+    // console.log(deleteTask, keyList, keyTask);
     setDeleteTask({
-      key,
+      keyList,
+      key: keyTask,
       deleteTask,
     });
 
@@ -164,8 +202,61 @@ export default function Tasks() {
             return (
               <div key={key} className="card">
                 <h5 className="card-header text-muted text-center">
-                  {allLists[key].nome}
+                  {allLists[key].nome}{" "}
+                  <button
+                    onClick={() => {
+                      setIsForEditList({
+                        isForEditList: true,
+                        listId: key,
+                      });
+                    }}
+                    type="button"
+                    className="btn btn-warning"
+                  >
+                    Editar
+                  </button>{" "}
+                  <button
+                    onClick={() => {
+                      handleShowModalDelete(null, key, null);
+                    }}
+                    type="button"
+                    className="btn btn-danger"
+                  >
+                    Excluir
+                  </button>
                 </h5>
+
+                {isForEditList.isForEditList && isForEditList.listId === key && (
+                  <h5 className="card-header text-muted text-center">
+                    <form
+                      onSubmit={(e) => {
+                        handleEditList(e, key);
+                      }}
+                    >
+                      <input
+                        type="text"
+                        placeholder="nome da lista"
+                        defaultValue={allLists[key].nome}
+                        onChange={(e) => {
+                          setEditList(e.target.value);
+                        }}
+                        required
+                      />{" "}
+                      <button type="submit" className="btn btn-success">
+                        <FontAwesomeIcon icon={faCheck} />
+                      </button>{" "}
+                      <button
+                        onClick={() => {
+                          setIsForEditList(false);
+                        }}
+                        type="button"
+                        className="btn btn-danger"
+                      >
+                        <FontAwesomeIcon icon={faBan} />
+                      </button>{" "}
+                    </form>
+                  </h5>
+                )}
 
                 <form onSubmit={addTask}>
                   <div className="mb-3">
@@ -206,15 +297,15 @@ export default function Tasks() {
                     </thead>
                     <tbody>
                       {allLists[key].tarefas &&
-                        Object.keys(allLists[key].tarefas).map((keyTasks) => {
+                        Object.keys(allLists[key].tarefas).map((keyTask) => {
                           return (
-                            <tr key={keyTasks}>
-                              <td>{allLists[key].tarefas[keyTasks].tarefa}</td>
+                            <tr key={keyTask}>
+                              <td>{allLists[key].tarefas[keyTask].tarefa}</td>
                               <td>
-                                {allLists[key].tarefas[keyTasks].tempo_limite}
+                                {allLists[key].tarefas[keyTask].tempo_limite}
                               </td>
                               <td>
-                                {allLists[key].tarefas[keyTasks].tags.map(
+                                {allLists[key].tarefas[keyTask].tags.map(
                                   (tag, index) => {
                                     return (
                                       <span
@@ -230,14 +321,14 @@ export default function Tasks() {
                                   }
                                 )}
                               </td>
-                              <td> {allLists[key].tarefas[keyTasks].status}</td>
+                              <td> {allLists[key].tarefas[keyTask].status}</td>
                               <td>
                                 <button
                                   onClick={() => {
                                     handleShowModal(
-                                      allLists[key].tarefas[keyTasks],
+                                      allLists[key].tarefas[keyTask],
                                       key,
-                                      keyTasks
+                                      keyTask
                                     );
                                   }}
                                   type="button"
@@ -248,8 +339,9 @@ export default function Tasks() {
                                 <button
                                   onClick={() => {
                                     handleShowModalDelete(
-                                      allLists[key].tarefas[keyTasks],
-                                      keyTasks
+                                      allLists[key].tarefas[keyTask],
+                                      key,
+                                      keyTask
                                     );
                                   }}
                                   type="button"
@@ -285,6 +377,7 @@ export default function Tasks() {
           handleCloseModal={handleCloseModalDelete}
           handleShowModal={handleShowModalDelete}
           deleteTask={deleteTask}
+          path="tarefas_listas"
         />
       </div>
     </div>

@@ -87,7 +87,6 @@ export default function ModalEdit({
       update(ref(db), updates)
         .then(() => {
           handleCloseModal();
-          console.log("ok");
         })
         .catch(() => {
           console.log("erro");

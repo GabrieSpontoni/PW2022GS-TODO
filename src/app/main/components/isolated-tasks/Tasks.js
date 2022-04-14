@@ -207,6 +207,7 @@ export default function Tasks() {
           handleCloseModal={handleCloseModalDelete}
           handleShowModal={handleShowModalDelete}
           deleteTask={deleteTask}
+          path="tarefas_isoladas"
         />
       </div>
     </div>

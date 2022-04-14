@@ -9,19 +9,54 @@ export default function ModalEdit({
   handleCloseModal,
   handleShowModal,
   deleteTask,
+  path,
 }) {
   const { user, loading } = useAuth();
 
   const db = getDatabase();
 
   const handleDelete = (e) => {
-    remove(ref(db, `usuarios/${user.uid}/tarefas_isoladas/${deleteTask.key}`))
-      .then(() => {
-        handleCloseModal();
-      })
-      .catch(() => {
-        console.log("erro");
-      });
+    switch (path) {
+      case "tarefas_isoladas":
+        remove(
+          ref(db, `usuarios/${user.uid}/tarefas_isoladas/${deleteTask.key}`)
+        )
+          .then(() => {
+            handleCloseModal();
+          })
+          .catch(() => {
+            console.log("erro");
+          });
+        break;
+      case "tarefas_listas":
+        if (deleteTask.key && deleteTask.deleteTask) {
+          remove(
+            ref(
+              db,
+              `usuarios/${user.uid}/tarefas_listas/${deleteTask.keyList}/tarefas/${deleteTask.key}`
+            )
+          )
+            .then(() => {
+              handleCloseModal();
+            })
+            .catch(() => {
+              console.log("erro");
+            });
+
+          //remove lista inteira
+        } else {
+          remove(
+            ref(db, `usuarios/${user.uid}/tarefas_listas/${deleteTask.keyList}`)
+          )
+            .then(() => {
+              handleCloseModal();
+            })
+            .catch(() => {
+              console.log("erro");
+            });
+        }
+        break;
+    }
     e.preventDefault();
   };
 
@@ -30,12 +65,10 @@ export default function ModalEdit({
       <div>
         <Modal show={showModal} onHide={handleCloseModal}>
           <Modal.Header closeButton>
-            <Modal.Title>Editar Tarefa</Modal.Title>
+            <Modal.Title>Deletar</Modal.Title>
           </Modal.Header>
 
-          <Modal.Body>
-            Deletar a Tarefa? a operação não pode ser desfeita
-          </Modal.Body>
+          <Modal.Body>A operação não pode ser desfeita</Modal.Body>
           <Modal.Footer>
             <Button variant="danger" onClick={handleCloseModal}>
               Cancelar
