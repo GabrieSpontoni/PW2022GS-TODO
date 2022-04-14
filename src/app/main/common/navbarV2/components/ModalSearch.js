@@ -17,8 +17,6 @@ export default function ModalSearch({
     handleShowModal();
     setWordToSearch(e.target[0].value);
     const dbRef = ref(getDatabase());
-    const isolatedTasks = [];
-    const listTasks = [];
     get(child(dbRef, `usuarios/${user.uid}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
@@ -54,57 +52,54 @@ export default function ModalSearch({
           <Modal.Title>Buscar Tarefas</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {Object.keys(isolatedTasks).map((keyTask) => (
-            <div key={keyTask}>
-              {isolatedTasks[keyTask].tarefa.includes(wordToSearch) && (
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title">
-                      {isolatedTasks[keyTask].tarefa}
-                    </h5>
+          {isolatedTasks &&
+            Object.keys(isolatedTasks).map((keyTask) => (
+              <div key={keyTask}>
+                {isolatedTasks[keyTask].tarefa.includes(wordToSearch) && (
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title">
+                        {isolatedTasks[keyTask].tarefa}
+                      </h5>
 
-                    <a href="/isolated-tasks" className="card-link">
-                      Tarefas isoladas
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {Object.keys(listTasks).map((keyList) => (
-            <div key={keyList}>
-              {Object.keys(listTasks[keyList].tarefas).map((keyTask) => (
-                <div key={keyTask}>
-                  {listTasks[keyList].tarefas[keyTask].tarefa.includes(
-                    wordToSearch
-                  ) && (
-                    <div className="card">
-                      <div className="card-body">
-                        <h5 className="card-title">
-                          {listTasks[keyList].tarefas[keyTask].tarefa}
-                        </h5>
-                        <h6 className="card-subtitle mb-2 text-muted">
-                          {listTasks[keyList].nome}
-                        </h6>
-
-                        <a href="/list-tasks" className="card-link">
-                          Lista de tarefas
-                        </a>
-                      </div>
+                      <a href="/isolated-tasks" className="card-link">
+                        Tarefas isoladas
+                      </a>
                     </div>
+                  </div>
+                )}
+              </div>
+            ))}
 
-                    // <div>
-                    //   <h4>Popover in a modal</h4>
-                    //   <a className="nav-link" href="/list-tasks">
-                    //     {listTasks[keyList].tarefas[keyTask].tarefa}
-                    //   </a>
-                    // </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
+          {listTasks &&
+            Object.keys(listTasks).length > 0 &&
+            Object.keys(listTasks).map((keyList) => (
+              <div key={keyList}>
+                {listTasks[keyList].tarefas &&
+                  Object.keys(listTasks[keyList].tarefas).map((keyTask) => (
+                    <div key={keyTask}>
+                      {listTasks[keyList].tarefas[keyTask].tarefa.includes(
+                        wordToSearch
+                      ) && (
+                        <div className="card">
+                          <div className="card-body">
+                            <h5 className="card-title">
+                              {listTasks[keyList].tarefas[keyTask].tarefa}
+                            </h5>
+                            <h6 className="card-subtitle mb-2 text-muted">
+                              {listTasks[keyList].nome}
+                            </h6>
+
+                            <a href="/list-tasks" className="card-link">
+                              Lista de tarefas
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            ))}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
