@@ -24,7 +24,7 @@ export function AuthProvider(props) {
 
   useEffect(() => {
     onAuthStateChanged(auth, (usr) => {
-      if (usr) {
+      if (usr && usr.displayName) {
         setUser(usr);
         setLoading(false);
       } else {
