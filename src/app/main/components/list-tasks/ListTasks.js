@@ -18,6 +18,7 @@ import {
 
 import ModalEdit from "../../common/modals/ModalEdit";
 import ModalDelete from "../../common/modals/ModalDelete";
+import Spinner from "../../common/spinner/Spinner";
 import styles from "./ListTasks.module.css";
 
 export default function Tasks() {
@@ -36,6 +37,7 @@ export default function Tasks() {
     listId: "",
   });
   const [editList, setEditList] = useState("");
+  const [loadingLists, setLoadingLists] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -45,8 +47,10 @@ export default function Tasks() {
         (snapshot) => {
           if (snapshot.val()) {
             setAllLists(snapshot.val());
+            setLoadingLists(false);
           } else {
             setAllLists(null);
+            setLoadingLists(false);
           }
         }
       );
@@ -63,7 +67,9 @@ export default function Tasks() {
     set(newListTasksRef, {
       nome: newList,
     })
-      .then(() => {})
+      .then(() => {
+        document.getElementById("newList").value = "";
+      })
       .catch(() => {
         console.log("erro");
       });
@@ -92,9 +98,11 @@ export default function Tasks() {
       ],
       status: "nao_concluido",
     })
-      .then(() => {})
-      .catch(() => {
-        console.log("erro");
+      .then(() => {
+        document.getElementById(`${newTask.lista_id}`).value = "";
+      })
+      .catch((e) => {
+        console.log(e);
       });
     e.preventDefault();
   };
@@ -158,228 +166,247 @@ export default function Tasks() {
   };
   return (
     <div>
-      <div className={styles.container}>
-        <h3 className="mb-2 text-muted">Lista de Tarefas</h3>
-      </div>
-      <div className={styles.container}>
-        <form onSubmit={addList}>
-          <div className="mb-3">
-            <label
-              htmlFor="exampleInputEmail1"
-              className="form-label mb-2 text-muted"
-            >
-              Nova Lista
-            </label>
+      {loadingLists && <Spinner />}
 
-            <div
-              style={{
-                display: "flex",
-              }}
-            >
-              <input
-                type="text"
-                className="form-control"
-                onChange={(e) => {
-                  setNewList(e.target.value);
-                }}
-                required
-              />
-              <div>
-                <button type="submit" className="btn btn-success">
-                  +
-                </button>
-              </div>
-            </div>
+      {!loadingLists && (
+        <div>
+          <div className={styles.container}>
+            <h3 className="mb-2 text-muted">Lista de Tarefas</h3>
           </div>
-        </form>
-      </div>
+          <div className={styles.container}>
+            <form onSubmit={addList}>
+              <div className="mb-3">
+                <label
+                  htmlFor="exampleInputEmail1"
+                  className="form-label mb-2 text-muted"
+                >
+                  Nova Lista
+                </label>
 
-      <div className={styles.container}>
-        <label className="form-label mb-2 text-muted">Listas</label>
-
-        {allLists &&
-          Object.keys(allLists).map((key) => {
-            return (
-              <div key={key} className="card">
-                <h5 className="card-header text-muted text-center">
-                  {allLists[key].nome}{" "}
-                  <button
-                    onClick={() => {
-                      setIsForEditList({
-                        isForEditList: true,
-                        listId: key,
-                      });
+                <div
+                  style={{
+                    display: "flex",
+                  }}
+                >
+                  <input
+                    id="newList"
+                    type="text"
+                    className="form-control"
+                    onChange={(e) => {
+                      setNewList(e.target.value);
                     }}
-                    type="button"
-                    className="btn btn-warning"
-                  >
-                    Editar
-                  </button>{" "}
-                  <button
-                    onClick={() => {
-                      handleShowModalDelete(null, key, null);
-                    }}
-                    type="button"
-                    className="btn btn-danger"
-                  >
-                    Excluir
-                  </button>
-                </h5>
+                    required
+                  />
+                  <div>
+                    <button type="submit" className="btn btn-success">
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
 
-                {isForEditList.isForEditList && isForEditList.listId === key && (
-                  <h5 className="card-header text-muted text-center">
-                    <form
-                      onSubmit={(e) => {
-                        handleEditList(e, key);
-                      }}
-                    >
-                      <input
-                        type="text"
-                        placeholder="nome da lista"
-                        defaultValue={allLists[key].nome}
-                        onChange={(e) => {
-                          setEditList(e.target.value);
+          <div className={styles.container}>
+            <label className="form-label mb-2 text-muted">Listas</label>
+
+            {allLists &&
+              Object.keys(allLists).map((key) => {
+                return (
+                  <div key={key} className="card">
+                    <h5 className="card-header text-muted text-center">
+                      {allLists[key].nome}{" "}
+                      <button
+                        onClick={() => {
+                          setIsForEditList({
+                            isForEditList: true,
+                            listId: key,
+                          });
                         }}
-                        required
-                      />{" "}
-                      <button type="submit" className="btn btn-success">
-                        <FontAwesomeIcon icon={faCheck} />
+                        type="button"
+                        className="btn btn-warning"
+                      >
+                        Editar
                       </button>{" "}
                       <button
                         onClick={() => {
-                          setIsForEditList(false);
+                          handleShowModalDelete(null, key, null);
                         }}
                         type="button"
                         className="btn btn-danger"
                       >
-                        <FontAwesomeIcon icon={faBan} />
-                      </button>{" "}
-                    </form>
-                  </h5>
-                )}
+                        Excluir
+                      </button>
+                    </h5>
 
-                <form onSubmit={addTask}>
-                  <div className="mb-3">
-                    <div
-                      style={{
-                        display: "flex",
-                      }}
-                    >
-                      <input
-                        type="text"
-                        placeholder="Nova Tarefa"
-                        className="form-control"
-                        onChange={(e) => {
-                          setNewTask({
-                            lista_id: key,
-                            tarefa: e.target.value,
-                          });
-                        }}
-                        required
-                      />
-                      <div>
-                        <button type="submit" className="btn btn-success">
-                          +
-                        </button>
+                    {isForEditList.isForEditList &&
+                      isForEditList.listId === key && (
+                        <h5 className="card-header text-muted text-center">
+                          <form
+                            onSubmit={(e) => {
+                              handleEditList(e, key);
+                            }}
+                          >
+                            <input
+                              type="text"
+                              placeholder="nome da lista"
+                              defaultValue={allLists[key].nome}
+                              onChange={(e) => {
+                                setEditList(e.target.value);
+                              }}
+                              required
+                            />{" "}
+                            <button type="submit" className="btn btn-success">
+                              <FontAwesomeIcon icon={faCheck} />
+                            </button>{" "}
+                            <button
+                              onClick={() => {
+                                setIsForEditList(false);
+                              }}
+                              type="button"
+                              className="btn btn-danger"
+                            >
+                              <FontAwesomeIcon icon={faBan} />
+                            </button>{" "}
+                          </form>
+                        </h5>
+                      )}
+
+                    <form onSubmit={addTask}>
+                      <div className="mb-3">
+                        <div
+                          style={{
+                            display: "flex",
+                          }}
+                        >
+                          <input
+                            type="text"
+                            id={`${key}`}
+                            placeholder="Nova Tarefa"
+                            className="form-control"
+                            onChange={(e) => {
+                              setNewTask({
+                                lista_id: key,
+                                tarefa: e.target.value,
+                              });
+                            }}
+                            required
+                          />
+                          <div>
+                            <button type="submit" className="btn btn-success">
+                              +
+                            </button>
+                          </div>
+                        </div>
                       </div>
+                    </form>
+                    <div className="table-responsive">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Tarefa</th>
+                            <th scope="col">Tempo limite</th>
+                            <th scope="col">Tags</th>
+                            <th scope="col">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allLists[key].tarefas &&
+                            Object.keys(allLists[key].tarefas).map(
+                              (keyTask) => {
+                                return (
+                                  <tr key={keyTask}>
+                                    <td>
+                                      {allLists[key].tarefas[keyTask].tarefa}
+                                    </td>
+                                    <td>
+                                      {
+                                        allLists[key].tarefas[keyTask]
+                                          .tempo_limite
+                                      }
+                                    </td>
+                                    <td>
+                                      {allLists[key].tarefas[keyTask].tags.map(
+                                        (tag, index) => {
+                                          return (
+                                            <span
+                                              key={index}
+                                              className={getColorBtn(tag.cor)}
+                                              style={{
+                                                marginRight: "5px",
+                                              }}
+                                            >
+                                              {tag.cor}
+                                            </span>
+                                          );
+                                        }
+                                      )}
+                                    </td>
+                                    <td>
+                                      {" "}
+                                      {allLists[key].tarefas[keyTask].status}
+                                    </td>
+                                    <td>
+                                      <button
+                                        onClick={() => {
+                                          handleShowModal(
+                                            allLists[key].tarefas[keyTask],
+                                            key,
+                                            keyTask
+                                          );
+                                        }}
+                                        type="button"
+                                        className="btn btn-warning"
+                                      >
+                                        <FontAwesomeIcon icon={faPenToSquare} />
+                                      </button>{" "}
+                                      <button
+                                        onClick={() => {
+                                          handleShowModalDelete(
+                                            allLists[key].tarefas[keyTask],
+                                            key,
+                                            keyTask
+                                          );
+                                        }}
+                                        type="button"
+                                        className="btn btn-danger"
+                                      >
+                                        <FontAwesomeIcon icon={faDeleteLeft} />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              }
+                            )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-                </form>
-                <div className="table-responsive">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">Tarefa</th>
-                        <th scope="col">Tempo limite</th>
-                        <th scope="col">Tags</th>
-                        <th scope="col">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allLists[key].tarefas &&
-                        Object.keys(allLists[key].tarefas).map((keyTask) => {
-                          return (
-                            <tr key={keyTask}>
-                              <td>{allLists[key].tarefas[keyTask].tarefa}</td>
-                              <td>
-                                {allLists[key].tarefas[keyTask].tempo_limite}
-                              </td>
-                              <td>
-                                {allLists[key].tarefas[keyTask].tags.map(
-                                  (tag, index) => {
-                                    return (
-                                      <span
-                                        key={index}
-                                        className={getColorBtn(tag.cor)}
-                                        style={{
-                                          marginRight: "5px",
-                                        }}
-                                      >
-                                        {tag.cor}
-                                      </span>
-                                    );
-                                  }
-                                )}
-                              </td>
-                              <td> {allLists[key].tarefas[keyTask].status}</td>
-                              <td>
-                                <button
-                                  onClick={() => {
-                                    handleShowModal(
-                                      allLists[key].tarefas[keyTask],
-                                      key,
-                                      keyTask
-                                    );
-                                  }}
-                                  type="button"
-                                  className="btn btn-warning"
-                                >
-                                  <FontAwesomeIcon icon={faPenToSquare} />
-                                </button>{" "}
-                                <button
-                                  onClick={() => {
-                                    handleShowModalDelete(
-                                      allLists[key].tarefas[keyTask],
-                                      key,
-                                      keyTask
-                                    );
-                                  }}
-                                  type="button"
-                                  className="btn btn-danger"
-                                >
-                                  <FontAwesomeIcon icon={faDeleteLeft} />
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            );
-          })}
-      </div>
+                );
+              })}
+          </div>
 
-      <div>
-        <ModalEdit
-          showModal={showModal}
-          handleCloseModal={handleCloseModal}
-          handleShowModal={handleShowModal}
-          editTask={editTask}
-          path="tarefas_listas"
-        />
-      </div>
+          <div>
+            <ModalEdit
+              showModal={showModal}
+              handleCloseModal={handleCloseModal}
+              handleShowModal={handleShowModal}
+              editTask={editTask}
+              path="tarefas_listas"
+            />
+          </div>
 
-      <div>
-        <ModalDelete
-          showModal={showModalDelete}
-          handleCloseModal={handleCloseModalDelete}
-          handleShowModal={handleShowModalDelete}
-          deleteTask={deleteTask}
-          path="tarefas_listas"
-        />
-      </div>
+          <div>
+            <ModalDelete
+              showModal={showModalDelete}
+              handleCloseModal={handleCloseModalDelete}
+              handleShowModal={handleShowModalDelete}
+              deleteTask={deleteTask}
+              path="tarefas_listas"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

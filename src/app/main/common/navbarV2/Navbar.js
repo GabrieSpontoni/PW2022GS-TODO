@@ -13,9 +13,13 @@ export default function Sidebar() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    setName(
-      user?.displayName.split(" ")[0] + " " + user?.displayName.split(" ")[1]
-    );
+    // setName(
+    //   user?.displayName.split(" ")[0] + " " + user?.displayName.split(" ")[1]
+    // );
+    const name = user?.displayName.split(" ");
+    if (name) {
+      setName(name[0] + " " + name[name.length - 1]);
+    }
   });
 
   const handleLogout = () => {
