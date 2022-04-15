@@ -90,7 +90,7 @@ export default function GeneralProgress() {
             </label>
             <div className="table-responsive">
               <table className="table">
-                {allLists && (
+                {allTasks && (
                   <thead>
                     <tr>
                       <th scope="col">Tarefa</th>
