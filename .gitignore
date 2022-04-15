@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+.firebase
 
 # testing
 /coverage
@@ -28,3 +29,15 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+#pwa
+**/public/precache.*.*.js
+**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/fallback-*.js
+**/public/precache.*.*.js.map
+**/public/sw.js.map
+**/public/workbox-*.js.map
+**/public/worker-*.js.map
+**/public/fallback-*.js
