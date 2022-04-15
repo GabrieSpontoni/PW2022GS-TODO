@@ -42,6 +42,7 @@ export function AuthProvider(props) {
         })
           .then((usr) => {
             console.log("User profile updated");
+            window.location.href = "/isolated-tasks";
           })
           .catch((error) => {
             console.log("Error updating user profile");
